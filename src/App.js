@@ -1,52 +1,73 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import SocscFUTLogo from "./assets/SOCSC FUT Logo S.jpg";
+
+import { getObject } from "./utils";
+import { ConnectButton } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
+import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit";
+
 function App() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [first_name, setfirst_name] = useState("");
+  const [last_name, setlast_name] = useState("");
   const [gender, setGender] = useState("");
   const [registrations, setRegistrations] = useState([]);
-  const [isConnected, setIsConnected] = useState(false);
+
+  const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
+  const [_digest, setDigest] = useState("");
+
+  const account = useCurrentAccount();
+
+  const PACKAGE_ID =
+    "0xba5f9f709dc7abd792ba63b3f9c0133d9bc33cfdf8c1b4bf0bfb62cdc2ad5ee6";
+  const STUDENTS_OBjECT_ID =
+    "0x66c7654d16520983464c773623f3fb3995646ca8b89eb9777847dda459411a86";
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting:", { firstName, lastName, gender });
+    const gd = "Male" ? true : false;
+    const transaction = new Transaction();
+    transaction.moveCall({
+      target: `${PACKAGE_ID}::smart_contract::add_student`,
+      arguments: [
+        transaction.object(STUDENTS_OBjECT_ID),
+        transaction.pure.string(first_name),
+        transaction.pure.string(last_name),
+        transaction.pure.bool(gd),
+      ],
+    });
+    signAndExecuteTransaction(
+      {
+        transaction: transaction,
+        chain: "sui:devnet",
+      },
+      {
+        onSuccess: (result) => {
+          setDigest(result.digest);
+          setfirst_name("");
+          setlast_name("");
+          setGender("");
+        },
+      }
+    );
   };
 
-  // Function to fetch registrations from blockchain
-  const fetchRegistrations = async () => {
-    const mockData = [
-      {
-        firstName: "Four Zero",
-        lastName: "Four",
-        gender: "Male",
-        wallet: "0x1234567890abcdef",
-      },
-      {
-        firstName: "Bard",
-        lastName: "Blockchain",
-        gender: "Male",
-        wallet: "0x1234567890abcdef",
-      },
-      {
-        firstName: "Ahmed Tinbu",
-        lastName: "Bola",
-        gender: "Female",
-        wallet: "0x1234567890abcdef",
-      },
-      {
-        firstName: "Thompson",
-        lastName: "Ogoyi",
-        gender: "Male",
-        wallet: "0x1234567890abcdef",
-      },
-    ];
-    setRegistrations(mockData);
-  };
 
   useEffect(() => {
-    fetchRegistrations();
+    const fetchRegistrations = async () => {
+      const mockData = await getObject(STUDENTS_OBjECT_ID);
+      setRegistrations(mockData);
+    };
+
+    fetchRegistrations(); // Initial fetch
+
+    const interval = setInterval(() => {
+      fetchRegistrations();
+    }, 5000); // Fetch data every 5 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
   return (
@@ -63,7 +84,7 @@ function App() {
           <h1>SOCSC FUT Meetup</h1>
         </div>
         <div className="connect-btn">
-          <button>Connect Wallet</button>
+          <ConnectButton />
         </div>
       </nav>
 
@@ -72,23 +93,23 @@ function App() {
           <h2>Register for the Sui On Campus Student Club Event</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="firstName">First Name:</label>
+              <label htmlFor="first_name">First Name:</label>
               <input
                 type="text"
-                id="firstName"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                id="first_name"
+                value={first_name}
+                onChange={(e) => setfirst_name(e.target.value)}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="lastName">Last Name:</label>
+              <label htmlFor="last_name">Last Name:</label>
               <input
                 type="text"
-                id="lastName"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                id="last_name"
+                value={last_name}
+                onChange={(e) => setlast_name(e.target.value)}
                 required
               />
             </div>
@@ -120,11 +141,7 @@ function App() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="submit-btn"
-              disabled={!isConnected}
-            >
+            <button type="submit" className="submit-btn" disabled={!account}>
               Submit Registration
             </button>
           </form>
@@ -136,10 +153,13 @@ function App() {
             {registrations.map((registration, index) => (
               <div key={index} className="registration-card">
                 <p>
-                  Name: {registration.lastName} {registration.firstName}
+                  Name: {registration.last_name} {registration.first_name}
                 </p>
                 <p>Gender: {registration.gender}</p>
-                <p>Wallet: {registration.wallet}</p>
+                <p>
+                  wallet_address: {registration.wallet_address.slice(0, 6)}...
+                  {registration.wallet_address.slice(-4)}
+                </p>
               </div>
             ))}
           </div>
