@@ -1,70 +1,86 @@
-# Getting Started with Create React App
+# SOCSC FUT Meetup Registration dApp
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a decentralized application (dApp) built on the Sui blockchain to facilitate student registration for the SOCSC FUT Meetup. Users can connect their Sui wallets, register for the event, and view a list of current registrants.
 
-## Available Scripts
+## Features
+- **Wallet Connection:** Uses `@mysten/dapp-kit` to connect with Sui wallets.
+- **Student Registration:** Users can register for the event by providing their first name, last name, and gender.
+- **On-Chain Storage:** Student data is stored on the Sui blockchain using a Move smart contract.
+- **Live Updates:** Registrations are fetched every 5 seconds to keep the displayed data up to date.
 
-In the project directory, you can run:
+## Technologies Used
+- **Frontend:** React.js
+- **Blockchain:** Sui Move
+- **API Requests:** Axios
+- **State Management:** React Hooks
 
-### `npm start`
+## Project Structure
+```
+/ - Root Directory
+  ├── src/
+  │   ├── assets/ - Contains images
+  │   ├── components/ - UI components (if applicable)
+  │   ├── utils/ - Utility functions (e.g., getObject.js for Sui RPC calls)
+  │   ├── App.js - Main React component
+  │   ├── index.js - Entry point for React app
+  │   ├── App.css - Styling
+  ├── move_contracts/
+  │   ├── smart_contract.move - Move module handling student registration
+  ├── package.json - Project dependencies and scripts
+  ├── README.md - Documentation
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Installation
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Prerequisites
+- Node.js and npm/yarn
+- Sui Wallet (for testing on Devnet)
 
-### `npm test`
+### Steps
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/your-repo/socsc-fut-meetup.git
+   cd socsc-fut-meetup
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Start the development server:
+   ```sh
+   npm start
+   ```
+4. Open the application in your browser at `http://localhost:3000`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Sui Move Smart Contract
+The Move module (`smart_contract.move`) defines:
+- `Student` struct: Stores student details (name, gender, wallet address).
+- `Students` struct: Maintains a list of registered students.
+- `init(ctx)`: Initializes the contract with an empty list.
+- `add_student(...)`: Allows users to register if they haven't already.
 
-### `npm run build`
+## Usage
+1. **Connect Wallet**: Click the "Connect Wallet" button to authenticate.
+2. **Fill Registration Form**: Enter your first name, last name, and select gender.
+3. **Submit Registration**: Click the "Submit" button (enabled only when a wallet is connected).
+4. **View Registrations**: The list updates every 5 seconds with new registrants.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Deployment
+To deploy the smart contract on Sui:
+1. Ensure you have the Sui CLI installed.
+2. Compile and publish the Move package:
+   ```sh
+   sui move build
+   sui client publish --gas-budget 500000000
+   ```
+3. Update the `PACKAGE_ID` and `STUDENTS_OBJECT_ID` in `App.js` with the deployed values.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## License
+This project is open-source under the MIT License.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Contact
+For questions or contributions, feel free to reach out or create an issue in the repository.
 
-### `npm run eject`
+---
+Developed for the SOCSC FUT Meetup on Sui Blockchain 🚀
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

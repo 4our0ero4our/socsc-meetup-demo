@@ -20,9 +20,9 @@ function App() {
   const account = useCurrentAccount();
 
   const PACKAGE_ID =
-    "0xba5f9f709dc7abd792ba63b3f9c0133d9bc33cfdf8c1b4bf0bfb62cdc2ad5ee6";
+    "0xe6aa54abadabc4324b6fb8a8a4bcab727a7bd38100e6ceaaa71872b98b493485";
   const STUDENTS_OBjECT_ID =
-    "0x66c7654d16520983464c773623f3fb3995646ca8b89eb9777847dda459411a86";
+    "0xb1823d81a3d2033c9a76c4582d36250855e5afc520a6bdca30fe8442af41c695";
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
